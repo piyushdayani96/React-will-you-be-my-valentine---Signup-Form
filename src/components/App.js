@@ -46,6 +46,7 @@ const App = () => {
       setValid(true);
     }
     setSubmitted(true);
+    return true;
   }
   return (
     <div id="main">
