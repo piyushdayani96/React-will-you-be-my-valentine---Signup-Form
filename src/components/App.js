@@ -1,89 +1,104 @@
-import React, { Component, useState } from "react";
+import React, {Component, useState} from "react";
 import '../styles/App.css';
 
+
 const App = () => {
-  const [values,setValues] = useState({
-    name: "",
-    email: "",
-    gender: "male",
-    phonenumber: "",
-    password: "",
-  });
-  const [submitted,setSubmitted] = useState(false);
-  const [valid,setValid] = useState(false);
-
-  const handleNameInputChange = (event) => {
-    setValues({...values,name: event.target.value});
-  };
-
-  const handleEmailInputChange = (event) => {
-    setValues({...values,email: event.target.value});
-  };
-
-  const handleGenderInputChange = (event) => {
-    setValues({...values,gender: event.target.value});
-  };
-
-  const handlePhoneNumberInputChange = (event) => {
-    setValues({...values,phonenumber: event.target.value});
-  };
-
-  const handlePasswordInputChange = (event) => {
-    setValues({...values,password: event.target.value});
-  };
-
-  // const resetValues = () =>{
-  //     values.name = "";
-  //     values.email = "";
-  //     values.phonenumber = "";
-  //     values.gender = "male";
-  //     values.password = "";
-  // }
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    if(values.name && values.email  && values.phonenumber && values.password && values.password.length > 5 && values.email.includes("@") && isNaN(values.name))
-    {
-      setValid(true);
-    }
-    setSubmitted(true);
-    return true;
+  const initialState={
+    nameMessage:'',
+    emailMessage:'',
+    phoneMessage:'',
+    passwordMessage:'',
+    error:'',
+    congrats:'',
   }
+  const [data,setData]=useState(initialState)
+  const formValidation = (e) => {
+    e.preventDefault();
+    const Name = document.querySelector("input[data-testid=name]").value;
+    const email = document.querySelector("input[data-testid=email]").value;
+    const phone = document.querySelector("input[data-testid=phoneNumber]").value;
+    const password = document.querySelector("input[data-testid=password]").value;
+
+    if (Name === "" || phone === "" || password === "" || email === "") {
+      setData((prevState)=>({
+        ...initialState,
+        error:"All fields are mandatory"
+      }))
+    }
+    else if (/[^0-9a-zA-Z]/.test(Name)) {
+      setData((prevState)=>({
+        ...initialState,
+        nameMessage:"Name is not alphanumeric"
+      }))
+    } else if (email.indexOf("@") === -1) {
+      setData((prevState)=>({
+        ...initialState,
+        emailMessage:"Email must contain @"
+      }))
+    } else if (isNaN(phone)) {
+      setData((prevState)=>({
+        ...initialState,
+        phoneMessage:"Phone Number must contain only numbers"
+      }))
+    } else if (password.length <= 6) {
+      setData((prevState)=>({
+        ...initialState,
+        passwordMessage:"Password must contain atleast 6 letters"
+      }))
+    } else {
+      let userName = email.slice(0, email.indexOf("@"));
+      setData((prevState)=>({
+        ...initialState,
+        congrats:`Hello ${userName}`
+      }))
+    }
+  };
   return (
-    <div id="main">
-      <form id="register-form" onSubmit={handleSubmit}>
-        {submitted && valid ? <div className="success-message">Hello {values.email.split('@')[0]}</div> : null}
-        {/* {submitted && valid ? resetValues() : null} */}
-        <input data-testid='name' className="form-field" onChange={handleNameInputChange} 
-        value={values.name}
-        type="text"
-        placeholder="Name"
-        name="Name"
-        required>
-        </input>
-        {submitted && !values.name ? <span>Name Error</span> : null}
-        {submitted && values.name && !isNaN(values.name) ? <span>Name is not alphanumeric</span> : null}
-        <input data-testid='email' className="form-field" value={values.email} onChange={handleEmailInputChange}
-        type="email"
-        placeholder="Email"
-        name="email"
-        required>
-        </input>
-        {submitted && !values.email ? <span>Email Error</span> : null}
-        {submitted && values.email && !values.email.includes("@") ? <span>Email must contain @</span> : null}
-        <select data-testid='gender' className="form-field" value={values.gender} onChange={handleGenderInputChange}>
-            <option defaultValue="male">male</option>
-            <option value="female">female</option>
-            <option value="others">others</option>
-        </select>
-        <input data-testid='phoneNumber' required className="form-field" value={values.phonenumber} onChange={handlePhoneNumberInputChange} type="number" placeholder="phone"></input>
-        {submitted && !values.phonenumber ? <span>Phone Number Error</span> : null}
-        <input data-testid='password' required id="password" type='password' className="form-field" value={values.password} onChange={handlePasswordInputChange} placeholder="password"></input>
-        {submitted && !values.password ? <span>Password Error</span> : null}
-        {submitted && values.password && document.getElementById('password').value.length < 6 ? <span>Password must contain atleast 6 letters</span> : null}
-        <button data-testid='submit' className="form-field" type="submit" id="submit" placeholder="Submit">Submit</button>
+    <>
+      <form onSubmit={formValidation}>
+        <div>
+          Name :
+          <input type="text" data-testid="name" />
+          <div>{data.nameMessage}</div>
+        </div>
+        <br />
+        <div>
+          Email address :
+          <input type="text" data-testid="email" />
+          <div>{data.emailMessage}</div>
+        </div>
+        <br />
+        <div>
+          Gender :
+          <select data-testid="gender">
+            <option value="male" selected>
+              Male
+            </option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <br />
+        <div>
+          Phone Number :
+          <input type="text" data-testid="phoneNumber" />
+          <div>{data.phoneMessage}</div>
+        </div>
+        <br />
+        <div>
+          Password :
+          <input type="password" data-testid="password" />
+          <div>{data.passwordMessage}</div>
+        </div>
+        <br />
+        <div>
+          <input type="submit" data-testid="submit" />
+        </div>
+        <div>{data.error}</div>
+        <div>{data.congrats}</div>
       </form>
-    </div>
-  )
-}
+    </>
+  );
+};
 
 export default App;
