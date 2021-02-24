@@ -79,7 +79,7 @@ const App = () => {
         <input data-testid='password' required id="password" type='password' className="form-field" value={values.password} onChange={handlePasswordInputChange} placeholder="password"></input>
         {submitted && !values.password ? <span>Password Error</span> : null}
         {submitted && values.password && document.getElementById('password').value.length < 6 ? <span>Password must contain atleast 6 letters</span> : null}
-        <button data-testid='submit' className="form-field" id="submit" placeholder="Submit">Submit</button>
+        <button data-testid='submit' className="form-field" type="submit" id="submit" placeholder="Submit">Submit</button>
       </form>
     </div>
   )
